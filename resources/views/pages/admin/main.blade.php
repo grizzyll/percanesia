@@ -1,220 +1,84 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Percanesia</title>
+    <title>@yield('title', 'Admin Panel - Percanesia Studio')</title>
 
-    <!-- Tailwind CSS & Alpine.js -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-    <!-- Google Font: Inter -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome 6 Icons CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brandBg: '#FFFFFF',         // Putih bersih
-                        brandDeep: '#2D1E2F',       // Ungu gelap untuk kontras teks
-                        brandMauve: '#A36B7E',      // Deep Mauve sesuai request
-                        brandPink: '#E1A2B8',       // Pink menyala soft
-                        brandPinkLight: '#F4E0E9',  // Pink pastel untuk elemen sekunder
-                        brandText: '#5A4A42',       // Cokelat earth tone halus
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Alpine.js CDN (Wajib agar x-text, x-for, dan fungsi klik berjalan) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Definisi Warna Pink & Mauve Pasti Muncul Tanpa Bergantung Cache Vite -->
     <style>
-        /* Base Styling & Polkadot */
-        body {
-            background-color: #FFFFFF;
-            background-image: radial-gradient(#A36B7E 1.2px, transparent 1.2px);
-            background-size: 32px 32px;
-            color: #5A4A42;
-            font-family: 'Inter', sans-serif;
-            letter-spacing: -0.01em;
-        }
-
-        /* Sidebar Active State dengan warna Pink-Mauve Pop */
-        .sidebar-active {
-            background: linear-gradient(135deg, #E1A2B8 0%, #A36B7E 100%);
-            color: white !important;
-            box-shadow: 0 8px 15px -5px rgba(163, 107, 126, 0.4);
-        }
-
-        /* Efek Kaca untuk Header agar polkadot di belakang terlihat blur halus */
-        .glass-header {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(163, 107, 126, 0.1);
-        }
-
-        /* Custom Scrollbar Mauve */
-        ::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #A36B7E;
-            border-radius: 10px;
-        }
+        .bg-brandBg { background-color: #FDF8F9 !important; }
+        .bg-brandPinkLight { background-color: #FCE7EC !important; }
+        .bg-brandPinkLight\/60 { background-color: rgba(252, 231, 236, 0.6) !important; }
+        .border-brandPinkLight { border-color: #FCE7EC !important; }
+        .border-brandPinkLight\/30 { border-color: rgba(252, 231, 236, 0.3) !important; }
+        .border-brandPinkLight\/40 { border-color: rgba(252, 231, 236, 0.4) !important; }
+        .border-brandPinkLight\/50 { border-color: rgba(252, 231, 236, 0.5) !important; }
+        .border-brandPinkLight\/20 { border-color: rgba(252, 231, 236, 0.2) !important; }
+        .text-brandMauve { color: #B86B7F !important; }
+        .bg-brandMauve { background-color: #B86B7F !important; }
+        .text-brandDeep { color: #2D1F25 !important; }
+        .text-brandText { color: #5A4950 !important; }
     </style>
 </head>
+<body class="bg-brandBg text-brandText font-sans antialiased min-h-screen flex"
+      x-data="{
+          modalTambahProduk: false,
+          modalUpdateStok: false,
+          selectedProduct: { id: null, name: '', stock: 0 },
+          totals: {
+              sales: 5420000,
+          },
+          orders: [
+              { id: 1, order_number: '#PCN-1201', customer: 'Tania Syabandia', item: 'Patchwork Tote Bag (1x)', grand_total: 200000, status: 'Diproses', date: '18 Okt 2025' },
+              { id: 2, order_number: '#PCN-1202', customer: 'Sarah Miller', item: 'Bawana Quilt (1x)', grand_total: 695000, status: 'Dikirim', date: '17 Okt 2025' },
+              { id: 3, order_number: '#PCN-1203', customer: 'Budi Santoso', item: 'Dompet Perca (2x)', grand_total: 145000, status: 'Selesai', date: '16 Okt 2025' }
+          ],
+          products: [
+              { id: 1, name: 'Patchwork Tote Bag', category: 'Tas', price: 185000, stock: 3, img: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=200&q=80' },
+              { id: 2, name: 'Dompet Perca Lipat', category: 'Dompet', price: 75000, stock: 2, img: 'https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=200&q=80' },
+              { id: 3, name: 'Sarung Bantal Perca', category: 'Sarung Bantal', price: 75000, stock: 1, img: 'https://images.unsplash.com/photo-1579656381226-5fc0f0100c3b?auto=format&fit=crop&w=200&q=80' },
+              { id: 4, name: 'Selimut Perca Vintage', category: 'Selimut', price: 240000, stock: 5, img: 'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&w=200&q=80' }
+          ],
+          formatRupiah(num) {
+              return 'Rp ' + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+          },
+          openQuickStockUpdate(product) {
+              this.selectedProduct = Object.assign({}, product);
+              this.modalUpdateStok = true;
+          }
+      }">
 
-<body x-data="adminDashboard()">
+    {{-- SIDEBAR ADMIN --}}
+    @include('components.sidebar')
 
-    <div class="flex h-screen overflow-hidden">
-        <!-- SIDEBAR -->
-        <aside
-            class="w-72 bg-white/95 backdrop-blur-md border-r border-brandPinkLight text-brandText flex flex-col justify-between z-20 shadow-sm">
-            <div>
-                <!-- Brand Logo Area -->
-                <div class="p-8 flex flex-col items-start border-b border-brandPinkLight/50">
-                    <div class="w-12 h-12 rounded-2xl bg-brandDeep flex items-center justify-center shadow-lg mb-3">
-                        <i class="fa-solid fa-leaf text-brandPink text-xl"></i>
-                    </div>
-                    <h1 class="text-xl font-semibold text-brandDeep tracking-tight">Percanesia</h1>
-                    <span class="text-[10px] text-brandMauve tracking-[0.2em] font-semibold uppercase mt-1">Studio
-                        Admin</span>
-                </div>
-
-                <!-- Navigation Links -->
-                <nav class="mt-6 px-6 space-y-1.5">
-                    <button @click="currentTab = 'overview'"
-                        :class="currentTab === 'overview' ? 'sidebar-active' : 'hover:bg-brandPinkLight/40 text-brandText/80' "
-                        class="w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-300 text-sm font-medium group">
-                        <i class="fa-solid fa-chart-pie w-5"></i><span>Ringkasan</span>
-                    </button>
-
-                    <button @click="currentTab = 'products'"
-                        :class="currentTab === 'products' ? 'sidebar-active' : 'hover:bg-brandPinkLight/40 text-brandText/80' "
-                        class="w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-300 text-sm font-medium group">
-                        <i class="fa-solid fa-boxes-stacked w-5"></i><span>Produk Katalog</span>
-                    </button>
-
-                    <button @click="currentTab = 'orders'"
-                        :class="currentTab === 'orders' ? 'sidebar-active' : 'hover:bg-brandPinkLight/40 text-brandText/80' "
-                        class="w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-300 text-sm font-medium group">
-                        <i class="fa-solid fa-shopping-bag w-5"></i>
-                        <span class="flex-grow text-left">Pesanan</span>
-                        <span :class="currentTab === 'orders' ? 'bg-white/20' : 'bg-brandPink text-white'"
-                            class="text-[10px] px-2 py-0.5 rounded-lg font-bold" x-text="orders.length"></span>
-                    </button>
-
-                    <button @click="currentTab = 'messages'"
-                        :class="currentTab === 'messages' ? 'sidebar-active' : 'hover:bg-brandPinkLight/40 text-brandText/80' "
-                        class="w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-300 text-sm font-medium group">
-                        <i class="fa-solid fa-envelope w-5"></i>
-                        <span class="flex-grow text-left">Pesan & Kontak</span>
-                    </button>
-                </nav>
+    {{-- KONTEN UTAMA --}}
+    <main class="flex-1 p-6 sm:p-10 overflow-y-auto">
+        @if(session('success'))
+            <div class="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center gap-2">
+                <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                <span>{{ session('success') }}</span>
             </div>
+        @endif
 
-            <!-- Footer Sidebar: Aksi Cepat & Profil Admin -->
-            <div class="p-6 space-y-4 border-t border-brandPinkLight/40">
-                <!-- Tombol ke Website Utama -->
-                <a href="/" target="_blank"
-                    class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-medium text-brandText hover:bg-brandPinkLight/50 transition-all">
-                    <i class="fa-solid fa-globe text-brandMauve w-4"></i>
-                    <span>Lihat Website Utama</span>
-                </a>
+        @yield('admin-content')
+    </main>
 
-                <!-- Admin Profile Card -->
-                <div class="bg-brandDeep p-4 rounded-2xl flex items-center gap-3 shadow-md">
-                    <div
-                        class="w-9 h-9 rounded-lg bg-brandPink flex items-center justify-center font-semibold text-brandDeep text-xs">
-                        AD</div>
-                    <div class="flex-grow min-w-0">
-                        <p class="text-xs font-semibold text-white truncate tracking-tight">Admin Percanesia</p>
-                        <p class="text-[9px] text-brandPink font-bold uppercase tracking-widest opacity-80">Owner Mode
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </aside>
+    {{-- MODAL POPUP --}}
+    @include('pages.admin.modals')
 
-        <!-- MAIN CONTENT AREA -->
-        <main class="flex-grow flex flex-col min-w-0 overflow-y-auto">
-            <!-- Header -->
-            <header class="glass-header px-10 py-6 flex items-center justify-between sticky top-0 z-10">
-                <div class="space-y-0.5">
-                    <h2 class="text-xl font-semibold text-brandDeep tracking-tight" x-text="getTabTitle()"></h2>
-                    <div class="flex items-center gap-2">
-                        <span class="w-1.5 h-1.5 rounded-full bg-brandPink"></span>
-                        <p class="text-[10px] text-brandMauve font-semibold uppercase tracking-widest">Manajemen
-                            Inventori & Toko</p>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-4">
-                    <div class="bg-white/80 border border-brandPinkLight px-4 py-2 rounded-xl shadow-sm">
-                        <p class="text-[11px] font-medium text-brandDeep"
-                            x-text="new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })">
-                        </p>
-                    </div>
-                    <button
-                        class="w-10 h-10 rounded-xl bg-white border border-brandPinkLight flex items-center justify-center text-brandMauve hover:text-brandPink shadow-sm transition-all">
-                        <i class="fa-regular fa-bell"></i>
-                    </button>
-                </div>
-            </header>
-
-            <!-- Dashboard Content Injection -->
-            <div class="p-10 max-w-7xl w-full mx-auto">
-                <div x-show="currentTab === 'overview'" x-transition.opacity.duration.300ms>
-                    @include('pages.admin.dashboard')
-                </div>
-                <div x-show="currentTab === 'products'" x-transition.opacity.duration.300ms>
-                    @include('pages.admin.produk')
-                </div>
-                <div x-show="currentTab === 'orders'" x-transition.opacity.duration.300ms>
-                    @include('pages.admin.pesanan')
-                </div>
-                <div x-show="currentTab === 'messages'" x-transition.opacity.duration.300ms>
-                    @include('pages.admin.pesan-masuk')
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- SCRIPT LOGIC -->
-    <script>
-        function adminDashboard() {
-            return {
-                currentTab: 'overview',
-                products: [
-                    { id: 1, name: "Aesthetic Eco Pouch Blue Wave", stock: 3, price: 125000 },
-                    { id: 2, name: "Sustainable Tote Bag Autumn Patch", stock: 12, price: 185000 }
-                ],
-                orders: [
-                    { id: 1, order_number: "PRC-001", customer: "Dewi Safitri", grand_total: 145000 }
-                ],
-                totals: { sales: 4235000 },
-                getTabTitle() {
-                    if (this.currentTab === 'overview') return 'Dashboard Ringkasan';
-                    if (this.currentTab === 'products') return 'Kelola Produk Perca';
-                    return 'Daftar Pesanan Masuk';
-                },
-                formatRupiah(val) {
-                    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
-                },
-                openQuickStockUpdate(p) {
-                    alert('Update stok untuk produk: ' + p.name);
-                }
-            }
-        }
-    </script>
 </body>
-
 </html>
