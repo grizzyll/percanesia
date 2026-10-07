@@ -35,13 +35,13 @@
 
                         <div>
                             <label class="block text-stone-600 font-medium mb-1">Nama Lengkap</label>
-                            <input type="text" name="name" value="{{ old('name') }}" required placeholder="Contoh: Tania Syabandia"
+                            <input type="text" name="name" value="{{ old('name') }}" required placeholder="Nama Lengkap"
                                    class="w-full px-4 py-2.5 rounded-xl border border-stone-300 text-stone-800 focus:outline-none focus:ring-1 focus:ring-[#2C3A3F]">
                         </div>
 
                         <div>
                             <label class="block text-stone-600 font-medium mb-1">Alamat Email</label>
-                            <input type="email" name="email" value="{{ old('email') }}" required placeholder="tania@example.com"
+                            <input type="email" name="email" value="{{ old('email') }}" required placeholder="perca@example.com"
                                    class="w-full px-4 py-2.5 rounded-xl border border-stone-300 text-stone-800 focus:outline-none focus:ring-1 focus:ring-[#2C3A3F]">
                         </div>
 

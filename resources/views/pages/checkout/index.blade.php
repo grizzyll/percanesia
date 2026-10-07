@@ -47,7 +47,7 @@
                         <div class="space-y-3 text-xs">
                             <div>
                                 <label class="block text-stone-600 font-medium mb-1">Nama Lengkap</label>
-                                <input type="text" name="nama" value="Tania Syabandia" required
+                                <input type="text" name="nama" value="Jennie Kim" required
                                        class="w-full px-4 py-2.5 rounded-xl border border-stone-300 text-stone-800 focus:outline-none focus:ring-1 focus:ring-[#2C3A3F]">
                             </div>
 
@@ -59,7 +59,7 @@
 
                             <div>
                                 <label class="block text-stone-600 font-medium mb-1">Email</label>
-                                <input type="email" name="email" value="tania.sy@example.com" required
+                                <input type="email" name="email" value="jennie.sy@example.com" required
                                        class="w-full px-4 py-2.5 rounded-xl border border-stone-300 text-stone-800 focus:outline-none focus:ring-1 focus:ring-[#2C3A3F]">
                             </div>
 

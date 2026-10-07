@@ -122,7 +122,7 @@
 
                         <div>
                             <label class="block text-stone-600 font-medium mb-1.5">Nama Lengkap</label>
-                            <input type="text" name="name" required placeholder="Contoh: Tania Syabandia"
+                            <input type="text" name="name" required placeholder="Contoh: Jennie Kim"
                                    class="w-full px-4 py-3 rounded-xl border border-stone-300 text-stone-800 focus:outline-none focus:ring-1 focus:ring-[#2C3A3F]">
                         </div>
 
