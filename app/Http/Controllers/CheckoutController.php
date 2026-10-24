@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+<<<<<<< HEAD
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Order;
@@ -92,3 +93,34 @@ class CheckoutController extends Controller
         return redirect()->route('payment.show', $order);
     }
 }
+=======
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class CheckoutController extends Controller
+{
+    public function cart()
+    {
+        return view('pages.checkout.cart');
+    }
+
+    public function index()
+    {
+        // JIKA USER BELUM LOGIN, PAKSA LOGIN DULU!
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('info', 'Silakan masuk atau daftar akun terlebih dahulu untuk menyelesaikan pesanan Anda.');
+        }
+
+        return view('pages.checkout.index');
+    }
+
+    public function process(Request $request)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        return redirect()->route('home')->with('success', 'Terima kasih! Pesanan Anda telah berhasil dibuat.');
+    }
+}
+>>>>>>> b0f49f9d925596baec365c3dd3e12c057965b300

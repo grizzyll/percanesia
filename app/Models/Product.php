@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+<<<<<<< HEAD
 use Illuminate\Database\Eloquent\Model;
 
 // OPSIONAL: pakai model Product milik tim kalau sudah ada.
@@ -22,3 +23,23 @@ class Product extends Model
         return str_starts_with($this->image, 'http') ? $this->image : asset($this->image);
     }
 }
+=======
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Product extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'category',
+        'price',
+        'stock',
+        'image',
+        'description',
+        'status',
+        'is_featured',
+    ];
+}
+>>>>>>> b0f49f9d925596baec365c3dd3e12c057965b300
