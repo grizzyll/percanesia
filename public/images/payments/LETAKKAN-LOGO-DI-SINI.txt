@@ -1,0 +1,2 @@
+Taruh logo resmi bank, e-wallet, dan kartu di folder ini (bca.png, bri.png, bni.png, mandiri.png, ovo.png, dana.png, shopeepay.png, gopay.png, visa.png, mastercard.png, jcb.png).
+Selama belum ada, halaman menampilkan label teks.
