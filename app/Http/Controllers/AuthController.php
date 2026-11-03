@@ -69,7 +69,7 @@ class AuthController extends Controller
         // Otomatis login setelah register
         Auth::login($user);
 
-        return redirect()->route('checkout')->with('success', 'Akun berhasil dibuat! Silakan lanjutkan pesanan Anda.');
+       return redirect()->route('checkout.index')->with('success', 'Akun berhasil dibuat! Silakan lanjutkan pesanan Anda.');
     }
 
     public function logout(Request $request)

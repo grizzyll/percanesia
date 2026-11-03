@@ -12,13 +12,16 @@ class PercanesiaProductSeeder extends Seeder
     public function run(): void
     {
         $products = [
-            ['name' => 'Patchwork Tote Bag', 'slug' => 'patchwork-tote-bag', 'price' => 185000, 'image' => 'images/products/patchwork-tote-bag.jpg'],
-            ['name' => 'Dompet Perca', 'slug' => 'dompet-perca', 'price' => 65000, 'image' => 'images/products/dompet-perca.jpg'],
-            ['name' => 'Sarung Bantal Perca', 'slug' => 'sarung-bantal-perca', 'price' => 75000, 'image' => 'images/products/sarung-bantal-perca.jpg'],
+            ['name' => 'Patchwork Tote Bag', 'slug' => 'patchwork-tote-bag', 'category' => 'Tas', 'price' => 185000, 'image' => 'images/products/patchwork-tote-bag.jpg'],
+            ['name' => 'Dompet Perca', 'slug' => 'dompet-perca', 'category' => 'Dompet', 'price' => 65000, 'image' => 'images/products/dompet-perca.jpg'],
+            ['name' => 'Sarung Bantal Perca', 'slug' => 'sarung-bantal-perca', 'category' => 'Sarung Bantal', 'price' => 75000, 'image' => 'images/products/sarung-bantal-perca.jpg'],
         ];
 
         foreach ($products as $product) {
-            Product::updateOrCreate(['slug' => $product['slug']], $product);
+            Product::updateOrCreate(
+                ['slug' => $product['slug']],
+                $product + ['stock' => 10, 'status' => 'Tersedia', 'is_active' => true]
+            );
         }
     }
 }

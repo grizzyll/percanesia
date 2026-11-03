@@ -2,23 +2,47 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-// OPSIONAL: pakai model Product milik tim kalau sudah ada.
-// Yang dibutuhkan keranjang: name, price, dan image_url.
 class Product extends Model
 {
-    protected $fillable = ['name', 'slug', 'price', 'image', 'is_active'];
+    use HasFactory;
 
-    protected $casts = ['is_active' => 'boolean'];
+    protected $fillable = [
+        'name',
+        'slug',
+        'category',
+        'price',
+        'stock',
+        'image',
+        'description',
+        'status',
+        'is_active',
+        'is_featured',
+    ];
 
-    /** image berisi path di folder public (contoh: images/products/dompet-perca.jpg) atau URL penuh */
+    protected $casts = [
+        'price'       => 'integer',
+        'stock'       => 'integer',
+        'is_active'   => 'boolean',
+        'is_featured' => 'boolean',
+    ];
+
+    /**
+     * `image` berisi path relatif di folder public
+     * (contoh: images/products/dompet-perca.jpg) atau URL penuh.
+     */
     public function getImageUrlAttribute(): ?string
     {
         if (! $this->image) {
             return null;
         }
 
-        return str_starts_with($this->image, 'http') ? $this->image : asset($this->image);
+        if (preg_match('#^https?://#i', $this->image)) {
+            return $this->image;
+        }
+
+        return asset($this->image);
     }
 }
