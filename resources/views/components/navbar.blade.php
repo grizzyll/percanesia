@@ -79,7 +79,7 @@
             </a>
 
             {{-- 3. Keranjang Belanja (Cart) dengan Badge Angka --}}
-            <a href="{{ url('/cart') }}" class="relative hover:text-[#C07A65] p-1 transition" aria-label="Keranjang Belanja">
+            <a href="{{ route('cart.index') }}" class="relative hover:text-[#C07A65] p-1 transition" aria-label="Keranjang Belanja">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                 </svg>
@@ -155,7 +155,7 @@
         <a href="{{ url('/contact') }}" class="block py-2 text-[#2C3A3F] hover:text-[#C07A65]">Contact & Workshop Malang</a>
         
         <div class="pt-3 border-t border-[#EBE5DC] flex flex-col gap-2">
-            <a href="{{ url('/cart') }}" class="py-2 text-[#2C3A3F] flex items-center justify-between">
+            <a href="{{ route('cart.index') }}" class="py-2 text-[#2C3A3F] flex items-center justify-between">
                 <span>Keranjang Belanja</span>
                 <span class="bg-[#2C3A3F] text-white text-[10px] px-2 py-0.5 rounded-full">3 Item</span>
             </a>
