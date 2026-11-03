@@ -45,6 +45,7 @@ require __DIR__.'/checkout.php';
 
 // Alamat lama /cart diarahkan ke /keranjang supaya bookmark/link lama tidak 404
 Route::redirect('/cart', '/keranjang');
+Route::redirect('/shop', '/katalog');
 
 // 6. DEMO: hanya untuk development lokal
 if (app()->environment('local')) {
