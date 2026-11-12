@@ -119,18 +119,28 @@
                             </div>
 
                             {{-- Tombol Tambah ke Keranjang --}}
-                            <a href="{{ url('/checkout') }}" class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-[#2C3A3F] text-[#2C3A3F] text-xs sm:text-sm font-medium hover:bg-white transition">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                                </svg>
-                                <span>Tambah ke Keranjang</span>
-                            </a>
+                            <form method="POST" action="{{ route('cart.store') }}" class="flex-1 flex">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                <input type="hidden" name="quantity" :value="qty">
+                                <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-[#2C3A3F] text-[#2C3A3F] text-xs sm:text-sm font-medium hover:bg-white transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                                    </svg>
+                                    <span>Tambah ke Keranjang</span>
+                                </button>
+                            </form>
                         </div>
 
                         {{-- Tombol Beli Sekarang --}}
-                        <a href="{{ url('/checkout') }}" class="w-full inline-flex items-center justify-center px-6 py-3.5 rounded-full bg-[#2C3A3F] text-white text-xs sm:text-sm font-medium hover:bg-black transition shadow-sm">
-                            Beli Sekarang
-                        </a>
+                        <form method="POST" action="{{ route('cart.store') }}">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <input type="hidden" name="quantity" :value="qty">
+                            <button type="submit" class="w-full inline-flex items-center justify-center px-6 py-3.5 rounded-full bg-[#2C3A3F] text-white text-xs sm:text-sm font-medium hover:bg-black transition shadow-sm">
+                                Beli Sekarang
+                            </button>
+                        </form>
 
                         {{-- Wishlist Button Link --}}
                         <div class="text-center pt-1">
