@@ -3,11 +3,20 @@
 @section('title', 'Checkout - Percanesia')
 
 @section('content')
-    <nav class="pc-breadcrumb" aria-label="Breadcrumb"><a href="{{ route('cart.index') }}">Keranjang</a><span>/</span>Checkout</nav>
-    <h1 class="pc-title">Checkout</h1>
-    <p class="pc-sub">Lengkapi informasi berikut untuk melanjutkan pesanan Anda.</p>
-
-    <div id="stepper" class="stepper stepper--sage stepper--wide" aria-label="Langkah checkout"></div>
+    <nav class="text-xs text-stone-500 mb-6 flex items-center space-x-2" aria-label="Breadcrumb">
+        <a href="{{ url('/') }}" class="hover:text-[#2C3A3F]">Home</a>
+        <span>/</span>
+        <a href="{{ route('cart.index') }}" class="hover:text-[#2C3A3F]">Keranjang</a>
+        <span>/</span>
+        <span class="text-[#2C3A3F] font-medium">Checkout</span>
+    </nav>
+    <div class="pc-head mb-8">
+        <div>
+            <h1 class="text-3xl sm:text-4xl font-serif text-[#2C3A3F] font-normal">Checkout</h1>
+            <p class="text-xs sm:text-sm text-stone-600 font-light mt-1">Lengkapi informasi berikut untuk melanjutkan pesanan Anda.</p>
+        </div>
+        <div id="stepper" class="stepper stepper--sage" aria-label="Langkah checkout"></div>
+    </div>
 
     <form id="checkout-form" method="POST" action="{{ route('checkout.store') }}" class="pc-layout" novalidate>
         @csrf

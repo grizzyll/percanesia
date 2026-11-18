@@ -5,14 +5,18 @@
 @section('content')
     @inject('money', 'App\Support\Money')
 
-    <nav class="pc-breadcrumb"><a href="{{ url('/') }}">Home</a><span>/</span>Keranjang</nav>
-    <h1 class="pc-title">Keranjang Belanja</h1>
-    <p class="pc-sub">Tinjau kembali pesananmu sebelum melanjutkan pembayaran.</p>
+    <nav class="text-xs text-stone-500 mb-6 flex items-center space-x-2" aria-label="Breadcrumb">
+        <a href="{{ url('/') }}" class="hover:text-[#2C3A3F]">Home</a>
+        <span>/</span>
+        <span class="text-[#2C3A3F] font-medium">Keranjang</span>
+    </nav>
+    <h1 class="text-3xl sm:text-4xl font-serif text-[#2C3A3F] font-normal mb-2">Keranjang Belanja</h1>
+    <p class="text-xs sm:text-sm text-stone-600 font-light mb-8">Tinjau kembali pesananmu sebelum melanjutkan pembayaran.</p>
 
     @if ($cart->items->isEmpty())
         <div class="pc-card empty">
             <p>Keranjangmu masih kosong.</p>
-            <a href="{{ url('/shop') }}" class="btn btn--inline">Mulai Belanja</a>
+            <a href="{{ url('/katalog') }}" class="btn btn--inline">Mulai Belanja</a>
         </div>
     @else
         <div class="pc-layout">

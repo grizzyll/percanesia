@@ -1,17 +1,27 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Percanesia')</title>
-    <link rel="preload" href="{{ asset('fonts/source-serif-4-latin-600-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="{{ asset('fonts/plus-jakarta-sans-latin-400-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="{{ asset('css/percanesia-checkout.css') }}?v=3">
-</head>
-<body class="pc">
+    <title>@yield('title', 'Percanesia - Sustainable Artisanal Patchwork')</title>
 
-{{-- kumpulan ikon, dipanggil dengan <svg class="icon"><use href="#i-nama"/></svg> --}}
+    <!-- Google Fonts: Playfair Display & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS / Vite -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="{{ asset('css/percanesia-checkout.css') }}?v=4">
+</head>
+
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<body class="bg-[#FAF7F2] font-sans antialiased text-[#2C3A3F] min-h-screen flex flex-col justify-between pc">
+
+{{-- Kumpulan ikon SVG untuk checkout & pembayaran --}}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
     <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-9-9.5C2 7 4.2 4.5 7 4.5c1.9 0 3.5 1 5 3 1.5-2 3.1-3 5-3 2.8 0 5 2.5 4 6C19.5 15.4 12 20 12 20z"/></symbol>
@@ -43,47 +53,32 @@
     <symbol id="i-sprig" viewBox="0 0 90 120"><path d="M70 118C62 90 60 60 66 8" fill="none" stroke="currentColor" stroke-width="1"/><g fill="none" stroke="currentColor" stroke-width="1"><ellipse cx="58" cy="30" rx="9" ry="4" transform="rotate(-35 58 30)"/><ellipse cx="76" cy="40" rx="9" ry="4" transform="rotate(35 76 40)"/><ellipse cx="56" cy="58" rx="10" ry="4" transform="rotate(-40 56 58)"/><ellipse cx="74" cy="70" rx="10" ry="4" transform="rotate(38 74 70)"/><ellipse cx="55" cy="88" rx="10" ry="4" transform="rotate(-40 55 88)"/><circle cx="66" cy="8" r="3"/><circle cx="50" cy="22" r="2.5"/><circle cx="82" cy="30" r="2.5"/></g></symbol>
 </svg>
 
-@php
-    $cartCount = \App\Models\Cart::current()->itemCount();
-@endphp
+{{-- 1. Navbar Toko Standar (Sama persis dengan /home, /katalog, /about) --}}
+@include('components.navbar')
 
-<header class="pc-header">
-    <div class="pc-header__inner">
-        <a href="{{ url('/') }}" class="pc-logo" aria-label="Percanesia"><img src="{{ asset('images/logo-percanesia.png') }}" alt="Percanesia" width="1000" height="407"></a>
-
-        {{-- ganti url di bawah dengan route halaman milik tim --}}
-        <nav class="pc-nav" aria-label="Menu utama">
-            <a href="{{ url('/') }}" class="is-active">Home</a>
-            <a href="{{ url('/shop') }}">Shop</a>
-            <a href="{{ url('/collections') }}">Collections</a>
-            <a href="{{ url('/about') }}">About Us</a>
-            <a href="{{ url('/journal') }}">Journal</a>
-            <a href="{{ url('/contact') }}">Contact</a>
-        </nav>
-
-        <div class="pc-actions">
-            <a href="{{ url('/shop') }}" aria-label="Cari"><svg class="icon"><use href="#i-search"/></svg></a>
-            <a href="{{ url('/wishlist') }}" aria-label="Wishlist"><svg class="icon"><use href="#i-heart"/></svg></a>
-            <a href="{{ route('cart.index') }}" aria-label="Keranjang">
-                <svg class="icon"><use href="#i-bag"/></svg>
-                <span class="pc-badge" data-count="{{ $cartCount }}">{{ $cartCount }}</span>
-            </a>
+{{-- 2. Konten Utama Pembayaran / Checkout --}}
+<main class="pc-main flex-grow w-full">
+    @if (session('success'))
+        <div class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-5 py-3 rounded-2xl">
+            {{ session('success') }}
         </div>
-    </div>
-</header>
-
-<main class="pc-main">
-    @if (session('success'))<div class="flash flash--success">{{ session('success') }}</div>@endif
-    @if (session('error'))<div class="flash flash--error">{{ session('error') }}</div>@endif
+    @endif
+    @if (session('error'))
+        <div class="mb-6 bg-rose-50 border border-rose-200 text-rose-800 text-sm px-5 py-3 rounded-2xl">
+            {{ session('error') }}
+        </div>
+    @endif
 
     @yield('content')
 
+    {{-- Value Pillars Toko --}}
     @include('partials.perks')
 </main>
 
-<footer class="pc-footer">&copy; {{ date('Y') }} Percanesia</footer>
+{{-- 3. Footer Toko Standar (4 Kolom Slate Blue) --}}
+@include('components.footer')
 
-<script src="{{ asset('js/pc-common.js') }}?v=3"></script>
+<script src="{{ asset('js/pc-common.js') }}?v=4"></script>
 @stack('scripts')
 </body>
 </html>
