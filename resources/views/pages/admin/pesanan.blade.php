@@ -23,15 +23,30 @@
           statusFilter: 'semua',
           searchQuery: '',
           modalDetailOrder: false,
-          selectedOrder: { id: '', customer: '', phone: '', address: '', item: '', total: 0, status: '', courier: '', payment: '', date: '' },
-          orders: [
-              { id: '#PCN-1201', customer: 'Tania Syabandia', phone: '081234567890', address: 'Jl. Soekarno Hatta No. 123, Malang, Jatim', item: 'Patchwork Tote Bag (1x)', total: 200000, status: 'Diproses', courier: 'JNE Reguler', payment: 'Transfer Bank (BCA)', date: '18 Okt 2025' },
-              { id: '#PCN-1202', customer: 'Sarah Miller', phone: '+61 412 345 678', address: '42 Wallaby Way, Sydney, Australia', item: 'Bawana Quilt (1x), Cushion Cover (2x)', total: 695000, status: 'Dikirim', courier: 'DHL Express Global', payment: 'E-Wallet / Midtrans', date: '17 Okt 2025' },
-              { id: '#PCN-1203', customer: 'Budi Santoso', phone: '085712349900', address: 'Jl. Ijen No. 45, Klojen, Malang, Jatim', item: 'Dompet Perca (2x)', total: 145000, status: 'Selesai', courier: 'Same Day Malang', payment: 'COD (Bayar di Tempat)', date: '16 Okt 2025' },
-              { id: '#PCN-1204', customer: 'Aulia Rahma', phone: '082198765432', address: 'Jl. Diponegoro No. 88, Surabaya, Jatim', item: 'Selimut Perca Vintage (1x)', total: 265000, status: 'Diproses', courier: 'SiCepat Express', payment: 'QRIS Instan', date: '18 Okt 2025' }
-          ],
+          selectedOrder: { id: '', rawNumber: '', customer: '', phone: '', address: '', item: '', total: 0, status: '', rawStatus: '', courier: '', payment: '', date: '' },
+          csrfToken: '{{ csrf_token() }}',
+          orders: @js($orders->map(fn($o) => [
+              'id' => $o->order_number,
+              'rawNumber' => $o->order_number,
+              'customer' => $o->recipient_name,
+              'phone' => $o->phone,
+              'address' => $o->address . ', ' . $o->city . ', ' . $o->country . ' (' . $o->postal_code . ')',
+              'item' => $o->items->map(fn($it) => ($it->product->name ?? 'Produk') . ' (' . $it->quantity . 'x)')->join(', ') ?: 'Pesanan Percanesia',
+              'total' => (int) $o->total,
+              'status' => match($o->status) {
+                  'diproses' => 'Diproses',
+                  'dikirim' => 'Dikirim',
+                  'selesai' => 'Selesai',
+                  'dibatalkan' => 'Dibatalkan',
+                  default => 'Diproses'
+              },
+              'rawStatus' => $o->status,
+              'courier' => $o->shipping_label ?: ($o->shipping_method ?? 'Standar Kurir'),
+              'payment' => $o->payment ? ucfirst($o->payment->method ?? 'Pembayaran') : 'Transfer / COD',
+              'date' => $o->created_at ? $o->created_at->format('d M Y') : '-',
+          ])),
           formatRupiah(num) {
-              return 'Rp ' + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+              return 'Rp ' + Number(num).toLocaleString('id-ID');
           },
           get filteredOrders() {
               return this.orders.filter(order => {
@@ -43,6 +58,38 @@
           openDetail(order) {
               this.selectedOrder = Object.assign({}, order);
               this.modalDetailOrder = true;
+          },
+          async submitOrderStatus() {
+              let statusMap = {
+                  'Diproses': 'diproses',
+                  'Dikirim': 'dikirim',
+                  'Selesai': 'selesai',
+                  'Dibatalkan': 'dibatalkan'
+              };
+              let raw = statusMap[this.selectedOrder.status] || this.selectedOrder.status.toLowerCase();
+              try {
+                  let res = await fetch('/admin/pesanan/' + this.selectedOrder.rawNumber + '/status', {
+                      method: 'PATCH',
+                      headers: {
+                          'X-CSRF-TOKEN': this.csrfToken,
+                          'Content-Type': 'application/json',
+                          'Accept': 'application/json'
+                      },
+                      body: JSON.stringify({ status: raw })
+                  });
+                  if (res.ok) {
+                      let o = this.orders.find(i => i.id === this.selectedOrder.id);
+                      if (o) {
+                          o.status = this.selectedOrder.status;
+                          o.rawStatus = raw;
+                      }
+                      this.modalDetailOrder = false;
+                  } else {
+                      alert('Gagal memperbarui status pesanan.');
+                  }
+              } catch (e) {
+                  alert('Terjadi kesalahan jaringan.');
+              }
           }
       }">
 
@@ -292,12 +339,7 @@
 
                 <div class="flex items-center justify-end gap-3 pt-3 border-t border-[#FCE7EC] text-xs">
                     <button type="button" @click="modalDetailOrder = false" class="px-5 py-2.5 rounded-full border border-[#FCE7EC] text-[#5A4950]">Batal</button>
-                    <button type="button" @click="
-                        let o = orders.find(i => i.id === selectedOrder.id);
-                        if (o) o.status = selectedOrder.status;
-                        modalDetailOrder = false;
-                        alert('Status pesanan berhasil diperbarui!');
-                    " class="px-6 py-2.5 rounded-full bg-[#B86B7F] text-white font-semibold hover:bg-[#2D1F25] transition shadow-sm">
+                    <button type="button" @click="submitOrderStatus()" class="px-6 py-2.5 rounded-full bg-[#B86B7F] text-white font-semibold hover:bg-[#2D1F25] transition shadow-sm">
                         Simpan Perubahan
                     </button>
                 </div>

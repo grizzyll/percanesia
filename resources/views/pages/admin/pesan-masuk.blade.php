@@ -23,12 +23,18 @@
           categoryFilter: 'semua',
           searchQuery: '',
           modalDetailPesan: false,
-          selectedMessage: { id: 1, name: '', email: '', phone: '', subject: '', message: '', date: '', is_read: false },
-          messages: [
-              { id: 1, name: 'Clara Dubois', email: 'clara.dubois@paris-boutique.fr', phone: '+33 6 12 34 56 78', subject: 'Kerjasama Ekspor', message: 'Halo Percanesia, kami butik interior di Paris tertarik untuk memesan 50 unit sarung bantal perca dan 20 quilt dengan motif earth-tone. Apakah ada katalog grosir ekspor dan perkiraan lead time pembuatannya?', date: '18 Okt 2025', is_read: false },
-              { id: 2, name: 'Dewi Lestari', email: 'dewi.lestari@gmail.com', phone: '081298765432', subject: 'Custom Order', message: 'Selamat siang, apakah saya bisa memesan selimut perca ukuran king size dengan request dominan warna terracotta dan indigo? Terima kasih.', date: '17 Okt 2025', is_read: true },
-              { id: 3, name: 'Bambang Pamungkas', email: 'bambang.p@yahoo.com', phone: '085733445566', subject: 'Pertanyaan Produk', message: 'Apakah Patchwork Tote Bag bagian dalamnya ada kantong resleting untuk tempat hp dan kunci?', date: '16 Okt 2025', is_read: true }
-          ],
+          selectedMessage: { id: null, name: '', email: '', phone: '', subject: '', message: '', date: '', is_read: false },
+          csrfToken: '{{ csrf_token() }}',
+          messages: @js($messages->map(fn($m) => [
+              'id' => $m->id,
+              'name' => $m->name,
+              'email' => $m->email,
+              'phone' => $m->phone ?? '-',
+              'subject' => $m->subject,
+              'message' => $m->message,
+              'date' => $m->created_at ? $m->created_at->format('d M Y') : '-',
+              'is_read' => (bool) $m->is_read,
+          ])),
           get filteredMessages() {
               return this.messages.filter(m => {
                   let matchCat = this.categoryFilter === 'semua' || 
@@ -39,10 +45,37 @@
                   return matchCat && matchSearch;
               });
           },
-          openMessage(msg) {
+          async openMessage(msg) {
               msg.is_read = true;
               this.selectedMessage = Object.assign({}, msg);
               this.modalDetailPesan = true;
+              try {
+                  await fetch('/admin/pesan-masuk/' + msg.id + '/read', {
+                      method: 'PATCH',
+                      headers: {
+                          'X-CSRF-TOKEN': this.csrfToken,
+                          'Accept': 'application/json'
+                      }
+                  });
+              } catch(e) {}
+          },
+          async deleteMessage(msg) {
+              if (!confirm('Hapus pesan dari ' + msg.name + '?')) return;
+              try {
+                  let res = await fetch('/admin/pesan-masuk/' + msg.id, {
+                      method: 'DELETE',
+                      headers: {
+                          'X-CSRF-TOKEN': this.csrfToken,
+                          'Accept': 'application/json'
+                      }
+                  });
+                  if (res.ok) {
+                      this.messages = this.messages.filter(item => item.id !== msg.id);
+                      this.modalDetailPesan = false;
+                  }
+              } catch (e) {
+                  alert('Gagal menghapus pesan.');
+              }
           }
       }">
 

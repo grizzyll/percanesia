@@ -25,16 +25,18 @@
           selectedProduct: { id: null, name: '', stock: 0 },
           filterKategori: 'semua',
           searchQuery: '',
-          products: [
-              { id: 1, name: 'Patchwork Tote Bag', category: 'Tas', price: 185000, stock: 3, status: 'Tersedia', img: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=200&q=80' },
-              { id: 2, name: 'Dompet Perca Lipat', category: 'Dompet', price: 75000, stock: 2, status: 'Tersedia', img: 'https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=200&q=80' },
-              { id: 3, name: 'Sarung Bantal Perca', category: 'Sarung Bantal', price: 75000, stock: 1, status: 'Menipis', img: 'https://images.unsplash.com/photo-1579656381226-5fc0f0100c3b?auto=format&fit=crop&w=200&q=80' },
-              { id: 4, name: 'Selimut Perca Vintage', category: 'Selimut', price: 240000, stock: 5, status: 'Tersedia', img: 'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&w=200&q=80' },
-              { id: 5, name: 'Taplak Meja Perca', category: 'Taplak', price: 120000, stock: 0, status: 'Habis', img: 'https://images.unsplash.com/photo-1605371924599-2d0365da1ae0?auto=format&fit=crop&w=200&q=80' },
-              { id: 6, name: 'Bucket Bag Perca', category: 'Tas', price: 175000, stock: 7, status: 'Tersedia', img: 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?auto=format&fit=crop&w=200&q=80' }
-          ],
+          csrfToken: '{{ csrf_token() }}',
+          products: @js($products->map(fn($p) => [
+              'id' => $p->id,
+              'name' => $p->name,
+              'category' => $p->category,
+              'price' => (int) $p->price,
+              'stock' => (int) $p->stock,
+              'status' => $p->stock > 0 ? 'Tersedia' : 'Habis',
+              'img' => $p->image_url ?? 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=200&q=80',
+          ])),
           formatRupiah(num) {
-              return 'Rp ' + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+              return 'Rp ' + Number(num).toLocaleString('id-ID');
           },
           get filteredProducts() {
               return this.products.filter(p => {
@@ -46,6 +48,50 @@
           openQuickStockUpdate(product) {
               this.selectedProduct = Object.assign({}, product);
               this.modalUpdateStok = true;
+          },
+          async deleteProduct(p) {
+              if (!confirm('Hapus produk ' + p.name + ' dari database?')) return;
+              try {
+                  let res = await fetch('/admin/produk/' + p.id, {
+                      method: 'DELETE',
+                      headers: {
+                          'X-CSRF-TOKEN': this.csrfToken,
+                          'Accept': 'application/json'
+                      }
+                  });
+                  if (res.ok) {
+                      this.products = this.products.filter(item => item.id !== p.id);
+                  } else {
+                      alert('Gagal menghapus produk.');
+                  }
+              } catch (e) {
+                  alert('Terjadi kesalahan jaringan.');
+              }
+          },
+          async submitStockUpdate() {
+              try {
+                  let res = await fetch('/admin/produk/' + this.selectedProduct.id + '/stock', {
+                      method: 'PATCH',
+                      headers: {
+                          'X-CSRF-TOKEN': this.csrfToken,
+                          'Content-Type': 'application/json',
+                          'Accept': 'application/json'
+                      },
+                      body: JSON.stringify({ stock: parseInt(this.selectedProduct.stock) })
+                  });
+                  if (res.ok) {
+                      let target = this.products.find(item => item.id === this.selectedProduct.id);
+                      if (target) {
+                          target.stock = parseInt(this.selectedProduct.stock);
+                          target.status = target.stock > 0 ? 'Tersedia' : 'Habis';
+                      }
+                      this.modalUpdateStok = false;
+                  } else {
+                      alert('Gagal memperbarui stok.');
+                  }
+              } catch(e) {
+                  alert('Terjadi kesalahan jaringan.');
+              }
           }
       }">
 
@@ -254,7 +300,7 @@
                                             class="px-3 py-1.5 rounded-xl bg-[#FCE7EC] text-[#B86B7F] hover:bg-[#B86B7F] hover:text-white font-medium transition">
                                         Update Stok
                                     </button>
-                                    <button type="button" @click="if(confirm('Hapus produk ' + p.name + '?')) products = products.filter(item => item.id !== p.id)" 
+                                    <button type="button" @click="deleteProduct(p)" 
                                             class="p-1.5 text-stone-400 hover:text-red-500 transition" title="Hapus Produk">
                                         <i class="fa-solid fa-trash-can"></i>
                                     </button>
@@ -352,12 +398,8 @@
 
                 <div class="flex justify-end gap-2 pt-2 border-t border-[#FCE7EC] text-xs">
                     <button type="button" @click="modalUpdateStok = false" class="px-4 py-2 rounded-xl border border-[#FCE7EC] text-[#5A4950]">Batal</button>
-                    <button type="button" @click="
-                        let p = products.find(item => item.id === selectedProduct.id);
-                        if (p) p.stock = selectedProduct.stock;
-                        modalUpdateStok = false;
-                    " class="px-5 py-2 rounded-xl bg-[#B86B7F] text-white font-medium hover:bg-[#2D1F25]">
-                        Simpan
+                    <button type="button" @click="submitStockUpdate()" class="px-5 py-2 rounded-xl bg-[#B86B7F] text-white font-medium hover:bg-[#2D1F25]">
+                        Simpan Perubahan
                     </button>
                 </div>
             </div>

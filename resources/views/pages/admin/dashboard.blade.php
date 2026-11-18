@@ -22,8 +22,9 @@
       x-data="{
           modalTambahProduk: false,
           modalUpdateStok: false,
-          selectedProduct: { id: 1, name: 'Patchwork Tote Bag', stock: 3 },
-          openQuickStockUpdate(name, stock) {
+          selectedProduct: { id: null, name: '', stock: 0 },
+          openQuickStockUpdate(id, name, stock) {
+              this.selectedProduct.id = id;
               this.selectedProduct.name = name;
               this.selectedProduct.stock = stock;
               this.modalUpdateStok = true;
@@ -120,6 +121,14 @@
             </div>
         </div>
 
+        {{-- Flash Messages --}}
+        @if (session('success'))
+            <div class="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
+                <span>{{ session('success') }}</span>
+                <span class="font-bold cursor-pointer" onclick="this.parentElement.remove()">&times;</span>
+            </div>
+        @endif
+
         <div class="space-y-8">
             <!-- 3 KARTU STATISTIK UTAMA -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -127,7 +136,7 @@
                 <div class="bg-white/90 backdrop-blur-md p-6 rounded-3xl border border-[#FCE7EC] shadow-sm flex items-center justify-between">
                     <div class="space-y-1">
                         <p class="text-[10px] font-bold text-[#B86B7F] uppercase tracking-widest">Total Penjualan</p>
-                        <h3 class="text-2xl font-bold text-[#2D1F25]">Rp 5.420.000</h3>
+                        <h3 class="text-2xl font-bold text-[#2D1F25]">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</h3>
                     </div>
                     <div class="w-14 h-14 rounded-2xl bg-[#FCE7EC]/60 flex items-center justify-center text-[#B86B7F] text-xl">
                         <i class="fa-solid fa-wallet"></i>
@@ -137,11 +146,11 @@
                 <!-- Card 2: Pesanan Baru -->
                 <div class="bg-white/90 backdrop-blur-md p-6 rounded-3xl border border-[#FCE7EC] shadow-sm flex items-center justify-between">
                     <div class="space-y-1">
-                        <p class="text-[10px] font-bold text-[#B86B7F] uppercase tracking-widest">Pesanan Baru</p>
-                        <h3 class="text-2xl font-bold text-[#2D1F25]">3 Pesanan</h3>
+                        <p class="text-[10px] font-bold text-[#B86B7F] uppercase tracking-widest">Total Pesanan</p>
+                        <h3 class="text-2xl font-bold text-[#2D1F25]">{{ $totalOrders }} Pesanan</h3>
                     </div>
                     <div class="w-14 h-14 rounded-2xl bg-[#FCE7EC]/60 flex items-center justify-center text-[#B86B7F] text-xl">
-                        <i class="fa-solid fa-hourglass-half"></i>
+                        <i class="fa-solid fa-bag-shopping"></i>
                     </div>
                 </div>
 
@@ -149,7 +158,7 @@
                 <div class="bg-white/90 backdrop-blur-md p-6 rounded-3xl border border-[#FCE7EC] shadow-sm flex items-center justify-between">
                     <div class="space-y-1">
                         <p class="text-[10px] font-bold text-[#B86B7F] uppercase tracking-widest">Varian Katalog</p>
-                        <h3 class="text-2xl font-bold text-[#2D1F25]">4 Produk</h3>
+                        <h3 class="text-2xl font-bold text-[#2D1F25]">{{ $totalProducts }} Produk</h3>
                     </div>
                     <div class="w-14 h-14 rounded-2xl bg-[#FCE7EC]/60 flex items-center justify-center text-[#B86B7F] text-xl">
                         <i class="fa-solid fa-boxes-stacked"></i>
@@ -170,41 +179,20 @@
                     </div>
 
                     <div class="space-y-3">
-                        {{-- Item 1 --}}
-                        <div class="flex items-center justify-between p-3.5 rounded-2xl bg-[#FDF8F9] border border-[#FCE7EC]/80">
-                            <div class="space-y-0.5">
-                                <p class="text-xs font-semibold text-[#2D1F25]">Patchwork Tote Bag</p>
-                                <p class="text-[10px] font-bold text-red-500 uppercase tracking-wide">Sisa: 3 unit</p>
+                        @forelse ($lowStockProducts as $low)
+                            <div class="flex items-center justify-between p-3.5 rounded-2xl bg-[#FDF8F9] border border-[#FCE7EC]/80">
+                                <div class="space-y-0.5">
+                                    <p class="text-xs font-semibold text-[#2D1F25]">{{ $low->name }}</p>
+                                    <p class="text-[10px] font-bold text-red-500 uppercase tracking-wide">Sisa: {{ $low->stock }} unit</p>
+                                </div>
+                                <button type="button" @click="openQuickStockUpdate({{ $low->id }}, '{{ addslashes($low->name) }}', {{ $low->stock }})" 
+                                        class="px-4 py-2 rounded-xl bg-[#B86B7F] text-white text-xs font-medium hover:bg-[#2D1F25] transition-all">
+                                    Update
+                                </button>
                             </div>
-                            <button @click="openQuickStockUpdate('Patchwork Tote Bag', 3)" 
-                                    class="px-4 py-2 rounded-xl bg-[#B86B7F] text-white text-xs font-medium hover:bg-[#2D1F25] transition-all">
-                                Update
-                            </button>
-                        </div>
-
-                        {{-- Item 2 --}}
-                        <div class="flex items-center justify-between p-3.5 rounded-2xl bg-[#FDF8F9] border border-[#FCE7EC]/80">
-                            <div class="space-y-0.5">
-                                <p class="text-xs font-semibold text-[#2D1F25]">Dompet Perca Lipat</p>
-                                <p class="text-[10px] font-bold text-red-500 uppercase tracking-wide">Sisa: 2 unit</p>
-                            </div>
-                            <button @click="openQuickStockUpdate('Dompet Perca Lipat', 2)" 
-                                    class="px-4 py-2 rounded-xl bg-[#B86B7F] text-white text-xs font-medium hover:bg-[#2D1F25] transition-all">
-                                Update
-                            </button>
-                        </div>
-
-                        {{-- Item 3 --}}
-                        <div class="flex items-center justify-between p-3.5 rounded-2xl bg-[#FDF8F9] border border-[#FCE7EC]/80">
-                            <div class="space-y-0.5">
-                                <p class="text-xs font-semibold text-[#2D1F25]">Sarung Bantal Perca</p>
-                                <p class="text-[10px] font-bold text-red-500 uppercase tracking-wide">Sisa: 1 unit</p>
-                            </div>
-                            <button @click="openQuickStockUpdate('Sarung Bantal Perca', 1)" 
-                                    class="px-4 py-2 rounded-xl bg-[#B86B7F] text-white text-xs font-medium hover:bg-[#2D1F25] transition-all">
-                                Update
-                            </button>
-                        </div>
+                        @empty
+                            <p class="text-xs text-stone-400 py-4 text-center">Semua stok produk dalam kondisi aman.</p>
+                        @endforelse
                     </div>
                 </div>
 
@@ -230,21 +218,17 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-[#FCE7EC]/50">
-                                <tr>
-                                    <td class="py-3.5 font-bold text-[#2D1F25]">#PCN-1201</td>
-                                    <td class="py-3.5 text-[#5A4950]">Tania Syabandia</td>
-                                    <td class="py-3.5 font-semibold text-[#2D1F25] text-right">Rp 200.000</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-3.5 font-bold text-[#2D1F25]">#PCN-1202</td>
-                                    <td class="py-3.5 text-[#5A4950]">Sarah Miller</td>
-                                    <td class="py-3.5 font-semibold text-[#2D1F25] text-right">Rp 695.000</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-3.5 font-bold text-[#2D1F25]">#PCN-1203</td>
-                                    <td class="py-3.5 text-[#5A4950]">Budi Santoso</td>
-                                    <td class="py-3.5 font-semibold text-[#2D1F25] text-right">Rp 145.000</td>
-                                </tr>
+                                @forelse ($recentOrders as $order)
+                                    <tr>
+                                        <td class="py-3.5 font-bold text-[#2D1F25]">{{ $order->order_number }}</td>
+                                        <td class="py-3.5 text-[#5A4950]">{{ $order->recipient_name }}</td>
+                                        <td class="py-3.5 font-semibold text-[#2D1F25] text-right">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="3" class="py-6 text-center text-stone-400 text-xs">Belum ada transaksi pesanan masuk.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -327,21 +311,25 @@
                     <button @click="modalUpdateStok = false" class="text-stone-400 hover:text-[#2D1F25] text-xl font-bold">&times;</button>
                 </div>
 
-                <div class="space-y-3 text-xs">
-                    <p class="text-[#5A4950]">Produk: <strong class="text-[#2D1F25]" x-text="selectedProduct.name"></strong></p>
-                    <div>
-                        <label class="block text-[#5A4950] font-semibold mb-1">Jumlah Stok Baru</label>
-                        <input type="number" x-model="selectedProduct.stock" min="0"
-                               class="w-full px-4 py-2.5 rounded-2xl border border-[#FCE7EC] text-[#2D1F25] focus:outline-none focus:ring-1 focus:ring-[#B86B7F] bg-[#FDF8F9]">
+                <form :action="'/admin/produk/' + selectedProduct.id + '/stock'" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <div class="space-y-3 text-xs">
+                        <p class="text-[#5A4950]">Produk: <strong class="text-[#2D1F25]" x-text="selectedProduct.name"></strong></p>
+                        <div>
+                            <label class="block text-[#5A4950] font-semibold mb-1">Jumlah Stok Baru</label>
+                            <input type="number" name="stock" x-model="selectedProduct.stock" min="0" required
+                                   class="w-full px-4 py-2.5 rounded-2xl border border-[#FCE7EC] text-[#2D1F25] focus:outline-none focus:ring-1 focus:ring-[#B86B7F] bg-[#FDF8F9]">
+                        </div>
                     </div>
-                </div>
 
-                <div class="flex justify-end gap-2 pt-2 border-t border-[#FCE7EC] text-xs">
-                    <button type="button" @click="modalUpdateStok = false" class="px-4 py-2 rounded-xl border border-[#FCE7EC] text-[#5A4950]">Batal</button>
-                    <button type="button" @click="modalUpdateStok = false; alert('Stok berhasil diupdate!')" class="px-5 py-2 rounded-xl bg-[#B86B7F] text-white font-medium hover:bg-[#2D1F25]">
-                        Simpan
-                    </button>
-                </div>
+                    <div class="flex justify-end gap-2 pt-4 border-t border-[#FCE7EC] text-xs">
+                        <button type="button" @click="modalUpdateStok = false" class="px-4 py-2 rounded-xl border border-[#FCE7EC] text-[#5A4950]">Batal</button>
+                        <button type="submit" class="px-5 py-2 rounded-xl bg-[#B86B7F] text-white font-medium hover:bg-[#2D1F25]">
+                            Simpan Perubahan
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 

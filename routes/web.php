@@ -39,6 +39,11 @@ Route::get('/admin/produk', [AdminController::class, 'produk'])->name('admin.pro
 Route::get('/admin/pesanan', [AdminController::class, 'pesanan'])->name('admin.pesanan');
 Route::get('/admin/pesan-masuk', [AdminController::class, 'pesanMasuk'])->name('admin.pesan_masuk');
 Route::post('/admin/produk/store', [AdminController::class, 'storeProduct'])->name('admin.produk.store');
+Route::patch('/admin/produk/{product}/stock', [AdminController::class, 'updateStock'])->name('admin.produk.stock');
+Route::delete('/admin/produk/{product}', [AdminController::class, 'destroyProduct'])->name('admin.produk.destroy');
+Route::patch('/admin/pesanan/{order}/status', [AdminController::class, 'updateOrderStatus'])->name('admin.pesanan.status');
+Route::patch('/admin/pesan-masuk/{message}/read', [AdminController::class, 'markMessageRead'])->name('admin.pesan_masuk.read');
+Route::delete('/admin/pesan-masuk/{message}', [AdminController::class, 'destroyMessage'])->name('admin.pesan_masuk.destroy');
 
 // 5. Keranjang, Checkout & Pembayaran (modul baru: keranjang, checkout, pembayaran/*, midtrans/notification)
 require __DIR__.'/checkout.php';
