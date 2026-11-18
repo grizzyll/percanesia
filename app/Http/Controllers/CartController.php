@@ -22,6 +22,7 @@ class CartController extends Controller
             'product_id' => ['required', 'integer', 'exists:products,id'],
             'quantity' => ['nullable', 'integer', 'min:1', 'max:99'],
             'variant' => ['nullable', 'string', 'max:100'],
+            'buy_now' => ['nullable', 'boolean'],
         ]);
 
         $product = Product::where('is_active', true)->findOrFail($data['product_id']);
@@ -33,6 +34,10 @@ class CartController extends Controller
 
         $item->quantity = min(99, ($item->exists ? $item->quantity : 0) + ($data['quantity'] ?? 1));
         $item->save();
+
+        if ($request->boolean('buy_now')) {
+            return redirect()->route('checkout.index');
+        }
 
         return redirect()->route('cart.index')->with('success', $product->name . ' masuk ke keranjang.');
     }

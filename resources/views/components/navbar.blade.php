@@ -84,7 +84,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                 </svg>
                 <span class="absolute -top-1 -right-1 bg-[#2C3A3F] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
-                    3
+                    {{ \App\Models\Cart::current()->itemCount() }}
                 </span>
             </a>
 
@@ -106,18 +106,38 @@
                      x-transition:leave="transition ease-in duration-75"
                      x-transition:leave-start="transform opacity-100 scale-100"
                      x-transition:leave-end="transform opacity-0 scale-95"
-                     class="absolute right-0 mt-3 w-48 bg-white rounded-2xl shadow-xl border border-[#EBE5DC] py-2 text-xs z-50"
+                     class="absolute right-0 mt-3 w-52 bg-white rounded-2xl shadow-xl border border-[#EBE5DC] py-2 text-xs z-50"
                      style="display: none;">
                     
-                    <a href="{{ url('/admin/dashboard') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-stone-700 hover:bg-[#FAF7F2] hover:text-[#2C3A3F]">
-                        <svg class="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-                        <span>Dashboard Admin</span>
-                    </a>
+                    @auth
+                        <div class="px-4 py-2 border-b border-[#EBE5DC] text-[11px]">
+                            <p class="font-bold text-[#2C3A3F] truncate">{{ Auth::user()->name }}</p>
+                            <p class="text-stone-400 truncate">{{ Auth::user()->email }}</p>
+                        </div>
+                        @if (Auth::user()->role === 'admin')
+                            <a href="{{ url('/admin/dashboard') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-stone-700 hover:bg-[#FAF7F2] hover:text-[#2C3A3F]">
+                                <svg class="w-4 h-4 text-[#B86B7F]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                                <span class="font-semibold text-[#B86B7F]">Admin Panel Studio</span>
+                            </a>
+                        @endif
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-red-600 hover:bg-red-50">
+                                <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                <span>Keluar (Logout)</span>
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ url('/admin/dashboard') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-stone-700 hover:bg-[#FAF7F2] hover:text-[#2C3A3F]">
+                            <svg class="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                            <span>Dashboard Admin</span>
+                        </a>
 
-                    <a href="{{ url('/login') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-stone-700 hover:bg-[#FAF7F2] hover:text-[#2C3A3F]">
-                        <svg class="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-                        <span>Login Pelanggan</span>
-                    </a>
+                        <a href="{{ url('/login') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-stone-700 hover:bg-[#FAF7F2] hover:text-[#2C3A3F]">
+                            <svg class="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                            <span>Login Akun</span>
+                        </a>
+                    @endauth
                 </div>
             </div>
 
@@ -157,7 +177,7 @@
         <div class="pt-3 border-t border-[#EBE5DC] flex flex-col gap-2">
             <a href="{{ route('cart.index') }}" class="py-2 text-[#2C3A3F] flex items-center justify-between">
                 <span>Keranjang Belanja</span>
-                <span class="bg-[#2C3A3F] text-white text-[10px] px-2 py-0.5 rounded-full">3 Item</span>
+                <span class="bg-[#2C3A3F] text-white text-[10px] px-2 py-0.5 rounded-full">{{ \App\Models\Cart::current()->itemCount() }} Item</span>
             </a>
             <a href="{{ url('/admin/dashboard') }}" class="py-2 text-[#C07A65] font-semibold">
                 Masuk ke Dashboard Admin &rarr;

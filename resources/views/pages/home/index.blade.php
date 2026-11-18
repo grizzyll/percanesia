@@ -111,63 +111,34 @@
         </div>
 
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            
-            {{-- Card 1 --}}
-            <div class="group flex flex-col">
-                <div class="relative aspect-square rounded-2xl overflow-hidden bg-stone-200">
-                    <img src="https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80" alt="Patchwork Tote Bag" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                    <button type="button" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center text-stone-600 hover:text-red-500 transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                    </button>
+            @forelse ($featuredProducts as $item)
+                <div class="group flex flex-col">
+                    <div class="relative aspect-square rounded-2xl overflow-hidden bg-stone-200">
+                        <a href="{{ route('katalog.detail', $item->id) }}" class="block w-full h-full">
+                            <img src="{{ $item->image_url ?? 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80' }}" 
+                                 alt="{{ $item->name }}" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                        </a>
+                        <a href="{{ route('katalog.detail', $item->id) }}" 
+                           aria-label="Detail {{ $item->name }}" 
+                           class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-stone-600 hover:text-[#C07A65] transition shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        </a>
+                    </div>
+                    <div class="mt-3">
+                        <a href="{{ route('katalog.detail', $item->id) }}" class="text-xs sm:text-sm font-medium text-[#2C3A3F] hover:text-[#C07A65] transition">
+                            {{ $item->name }}
+                        </a>
+                        <p class="text-xs sm:text-sm text-stone-600 mt-0.5">
+                            Rp {{ number_format($item->price, 0, ',', '.') }}
+                        </p>
+                    </div>
                 </div>
-                <div class="mt-3">
-                    <p class="text-xs sm:text-sm font-medium text-[#2C3A3F]">Patchwork Tote Bag</p>
-                    <p class="text-xs sm:text-sm text-stone-600 mt-0.5">Rp 185.000</p>
+            @empty
+                <div class="col-span-full py-12 text-center text-stone-500 text-sm">
+                    Belum ada produk pilihan yang ditampilkan.
                 </div>
-            </div>
-
-            {{-- Card 2 --}}
-            <div class="group flex flex-col">
-                <div class="relative aspect-square rounded-2xl overflow-hidden bg-stone-200">
-                    <img src="https://images.unsplash.com/photo-1579656381226-5fc0f0100c3b?auto=format&fit=crop&w=600&q=80" alt="Sarung Bantal Patchwork" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                    <button type="button" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center text-stone-600 hover:text-red-500 transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                    </button>
-                </div>
-                <div class="mt-3">
-                    <p class="text-xs sm:text-sm font-medium text-[#2C3A3F]">Sarung Bantal Patchwork</p>
-                    <p class="text-xs sm:text-sm text-stone-600 mt-0.5">Rp 75.000</p>
-                </div>
-            </div>
-
-            {{-- Card 3 --}}
-            <div class="group flex flex-col">
-                <div class="relative aspect-square rounded-2xl overflow-hidden bg-stone-200">
-                    <img src="https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=600&q=80" alt="Dompet Perca" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                    <button type="button" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center text-stone-600 hover:text-red-500 transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                    </button>
-                </div>
-                <div class="mt-3">
-                    <p class="text-xs sm:text-sm font-medium text-[#2C3A3F]">Dompet Perca</p>
-                    <p class="text-xs sm:text-sm text-stone-600 mt-0.5">Rp 65.000</p>
-                </div>
-            </div>
-
-            {{-- Card 4 --}}
-            <div class="group flex flex-col">
-                <div class="relative aspect-square rounded-2xl overflow-hidden bg-stone-200">
-                    <img src="https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&w=600&q=80" alt="Selimut Perca" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                    <button type="button" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center text-stone-600 hover:text-red-500 transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                    </button>
-                </div>
-                <div class="mt-3">
-                    <p class="text-xs sm:text-sm font-medium text-[#2C3A3F]">Selimut Perca</p>
-                    <p class="text-xs sm:text-sm text-stone-600 mt-0.5">Rp 240.000</p>
-                </div>
-            </div>
-
+            @endforelse
         </div>
 
         {{-- Dots Indicator --}}
